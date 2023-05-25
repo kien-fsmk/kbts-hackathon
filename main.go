@@ -1,9 +1,11 @@
 package main
 
 import (
+	"github.com/kien-fsmk/kbts-hackathon/server"
+	"os"
+	"os/signal"
 	"strings"
 
-	"github.com/kien-fsmk/kbts-hackathon/pkg/go-openai"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -42,5 +44,14 @@ func init() {
 
 // Starting a http server
 func main() {
-	openai.NewOpenAIClient(config.GetString("openai.api_key"))
+	httpServer := server.NewServer(logger, config)
+
+	httpServer.Start()
+
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, os.Kill)
+
+	<-c
+
+	httpServer.Stop()
 }

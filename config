@@ -6,3 +6,7 @@ password=""
 
 [openai]
 apiKey="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"
+
+[server]
+host="localhost"
+port=8080
