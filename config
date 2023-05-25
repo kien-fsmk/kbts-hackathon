@@ -1,0 +1,8 @@
+[redis]
+host="example.go"
+port=123
+db=0
+password=""
+
+[openai]
+apiKey="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"
