@@ -3,7 +3,7 @@ package main
 import (
 	"strings"
 
-	"github.com/kien-fsmk/kbts-hackathon/pkg/chatgpt"
+	"github.com/kien-fsmk/kbts-hackathon/pkg/go-openai"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -42,5 +42,5 @@ func init() {
 
 // Starting a http server
 func main() {
-	chatgpt.NewGPTClient(config.GetString("openai.api_key"))
+	openai.NewOpenAIClient(config.GetString("openai.api_key"))
 }
