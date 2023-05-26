@@ -23,17 +23,13 @@ type PaymentService struct {
 }
 
 func NewPaymentService(logger *logrus.Entry, openai *openai.OpenAIClient) *PaymentService {
-	payments, _ := loadPaymentFromFile("sample_txn")
+	// payments, _ := loadPaymentFromFile("sample_txn")
 	return &PaymentService{
 		logger:              logger,
 		openAIClient:        openai,
-		RawPayments:         payments,
+		RawPayments:         make([]Payment, 0),
 		PaymentWithCategory: make([]Payment, 0),
 	}
-}
-
-func (p *PaymentService) CreatePayment(payment *Payment) error {
-	return nil
 }
 
 func (p *PaymentService) CategorizePayment(ctx context.Context, payment Payment) (*Payment, error) {

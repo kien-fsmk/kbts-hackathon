@@ -1,22 +1,25 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/kien-fsmk/kbts-hackathon/handlers"
+	"github.com/kien-fsmk/kbts-hackathon/payment"
+	"github.com/kien-fsmk/kbts-hackathon/pkg/go-openai"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"net/http"
 )
 
 func InitRouter(logger *logrus.Entry, config *viper.Viper) *mux.Router {
 	router := mux.NewRouter()
 
-	trainingHandler := handlers.NewTrainingHandler(logger, config)
-	promptHandler := handlers.NewPromptHandler(logger, config)
+	openaiClient := openai.NewOpenAIClient(logger, "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", "davinci:ft-personal:kbts-2023-05-26-03-12-14")
+	paymentSvc := payment.NewPaymentService(logger, openaiClient)
 
-	router.HandleFunc("/api/v1/training/initiate", trainingHandler.TriggerTraining).Methods(http.MethodPost)
+	promptHandler := handlers.NewPaymentHandler(logger, config, paymentSvc)
 
-	router.HandleFunc("/api/v1/prompt", promptHandler.HandlerUserPrompts).Methods(http.MethodPost)
+	router.HandleFunc("/api/v1/payment", promptHandler.PaymentHandler).Methods(http.MethodPost)
 
 	return router
 }

@@ -1,12 +1,11 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"os"
+	"os/signal"
 	"strings"
 
-	"github.com/kien-fsmk/kbts-hackathon/payment"
-	"github.com/kien-fsmk/kbts-hackathon/pkg/go-openai"
+	"github.com/kien-fsmk/kbts-hackathon/server"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -45,28 +44,25 @@ func init() {
 
 // Starting a http server
 func main() {
-	// httpServer := server.NewServer(logger, config)
+	httpServer := server.NewServer(logger, config)
 
-	// httpServer.Start()
+	httpServer.Start()
 
-	// c := make(chan os.Signal)
-	// signal.Notify(c, os.Interrupt, os.Kill)
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, os.Kill)
 
-	// <-c
+	<-c
 
-	// httpServer.Stop()
+	httpServer.Stop()
 
-	openaiClient := openai.NewOpenAIClient(logger, "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", "davinci:ft-personal:kbts-2023-05-26-03-12-14")
-	paymentSvc := payment.NewPaymentService(logger, openaiClient)
+	// categorizedPayment, err := paymentSvc.CategorizePayment(context.Background(), paymentSvc.RawPayments[29])
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
-	categorizedPayment, err := paymentSvc.CategorizePayment(context.Background(), paymentSvc.RawPayments[29])
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Printf("\n")
-	fmt.Println("Categorized Payment")
-	fmt.Printf("Description: %s\nCategory: %s\n", categorizedPayment.Description, categorizedPayment.Category)
+	// fmt.Printf("\n")
+	// fmt.Println("Categorized Payment")
+	// fmt.Printf("Description: %s\nCategory: %s\n", categorizedPayment.Description, categorizedPayment.Category)
 
 	// categorizedPayments, err := paymentSvc.CategorizePayments(context.Background(), paymentSvc.RawPayments[:50])
 	// if err != nil {
