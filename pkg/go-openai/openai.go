@@ -19,6 +19,7 @@ func NewOpenAIClient(logger *logrus.Entry, apiKey string, modelID string) *OpenA
 		logger: logger,
 		apiKey: apiKey,
 		Client: openai.NewClient(apiKey),
+		model:  modelID,
 	}
 }
 
@@ -28,17 +29,15 @@ func (g *OpenAIClient) Completion(ctx context.Context, prompt string) (string, e
 		Prompt:      prompt,
 		MaxTokens:   10,
 		Temperature: 0,
-		TopP:        1,
+		TopP:        0.1,
 		N:           1,
-		LogProbs:    0,
-		Stop:        []string{"\n"},
+		LogProbs:    16,
 	}
 
 	completion, err := g.Client.CreateCompletion(ctx, completionRequest)
 	if err != nil {
 		g.logger.Errorf("error creating completion: %v", err)
 	}
-	g.logger.Infof("completion created: %+v", completion)
 
 	return completion.Choices[0].Text, nil
 }

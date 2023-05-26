@@ -5,7 +5,8 @@ db=0
 password=""
 
 [openai]
-apiKey="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"
+apiKey=""
+model="ft-MtqPRaH1AX3e1HcCwceaUxNM"
 
 [server]
 host="localhost"

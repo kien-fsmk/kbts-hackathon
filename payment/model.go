@@ -31,22 +31,42 @@ type BankAccount struct {
 	Country     string `json:"country"`
 }
 
-type PaymentCategory string
+type PaymentCategory int
 
 const (
-	PaymentCategoryAdvertising                  PaymentCategory = "Advertising"
-	PaymentCategoryEmployeeBenefitProgram       PaymentCategory = "Employee Benefit Program"
-	PaymentCategoryInsurance                    PaymentCategory = "Insurance"
-	PaymentCategoryLegalAndProfessionalExpenses PaymentCategory = "Legal and professional expenses"
-	PaymentCategoryOfficeExpensesAndSupplies    PaymentCategory = "Office expenses and supplies"
-	PaymentCategoryTelecommunication            PaymentCategory = "Telecommunication"
-	PaymentCategoryUtilities                    PaymentCategory = "Utilities"
-	PaymentCategoryRentalOrPayment              PaymentCategory = "Rental / Payment"
-	PaymentCategoryPostageAndShipping           PaymentCategory = "Postage and Shipping"
-	PaymentCategoryMedicalExpenses              PaymentCategory = "Medical expenses"
-	PaymentCategoryEntertainment                PaymentCategory = "Entertainment"
-	PaymentCategoryLicensesAndPermits           PaymentCategory = "Licenses and Permits"
-	PaymentCategoryWages                        PaymentCategory = "Wages"
-	PaymentCategoryOther                        PaymentCategory = "Other"
-	PaymentCategoryInvestment                   PaymentCategory = "Investment"
+	PaymentCategoryAdvertising PaymentCategory = iota + 1
+	PaymentCategorySubscription
+	PaymentCategoryEmployeeBenefitProgram
+	PaymentCategoryInsurance
+	PaymentCategoryLegalAndProfessionalExpenses
+	PaymentCategoryOfficeExpensesAndSupplies
+	PaymentCategoryTelecommunication
+	PaymentCategoryUtilities
+	PaymentCategoryRentalOrPayment
+	PaymentCategoryPostageAndShipping
+	PaymentCategoryMedicalExpenses
+	PaymentCategoryEntertainment
+	PaymentCategoryLicensesAndPermits
+	PaymentCategoryWages
+	PaymentCategoryOther
+	PaymentCategoryInvestment
 )
+
+var CategoryStr = map[PaymentCategory]string{
+	PaymentCategoryAdvertising:                  "Advertising",
+	PaymentCategorySubscription:                 "Subscription",
+	PaymentCategoryEmployeeBenefitProgram:       "Employee Benefit Program",
+	PaymentCategoryInsurance:                    "Insurance",
+	PaymentCategoryLegalAndProfessionalExpenses: "Legal and Professional Expenses",
+	PaymentCategoryOfficeExpensesAndSupplies:    "Office Expenses and Supplies",
+	PaymentCategoryTelecommunication:            "Telecommunication",
+	PaymentCategoryUtilities:                    "Utilities",
+	PaymentCategoryRentalOrPayment:              "Rental or Payment",
+	PaymentCategoryPostageAndShipping:           "Postage and Shipping",
+	PaymentCategoryMedicalExpenses:              "Medical Expenses",
+	PaymentCategoryEntertainment:                "Entertainment",
+	PaymentCategoryLicensesAndPermits:           "Licenses and Permits",
+	PaymentCategoryWages:                        "Wages",
+	PaymentCategoryOther:                        "Other",
+	PaymentCategoryInvestment:                   "Investment",
+}

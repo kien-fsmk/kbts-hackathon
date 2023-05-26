@@ -1,12 +1,12 @@
 package main
 
 import (
-	"os"
-	"os/signal"
+	"context"
+	"fmt"
 	"strings"
 
-	"github.com/kien-fsmk/kbts-hackathon/server"
-
+	"github.com/kien-fsmk/kbts-hackathon/payment"
+	"github.com/kien-fsmk/kbts-hackathon/pkg/go-openai"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -43,46 +43,36 @@ func init() {
 	}
 }
 
-type Payment struct {
-	PaymentID   string    `json:"payment_id"`
-	Amount      int       `json:"amount"`
-	Description string    `json:"description"`
-	Status      string    `json:"status"`
-	CreatedAt   string    `json:"created_at"`
-	Customer    Customer  `json:"customer"`
-	Recipient   Recipient `json:"recipient"`
-}
-
-type Customer struct {
-	CustomerID string `json:"customer_id"`
-	Email      string `json:"email"`
-}
-
-type Recipient struct {
-	RecipientID             string      `json:"recipient_id"`
-	Name                    string      `json:"name"`
-	Email                   string      `json:"email"`
-	BusinessRegistrationNum string      `json:"business_registration_number"`
-	BankAccount             BankAccount `json:"bank_account"`
-}
-
-type BankAccount struct {
-	BankName    string `json:"bank_name"`
-	AccountNo   string `json:"account_no"`
-	AccountName string `json:"account_name"`
-	Country     string `json:"country"`
-}
-
 // Starting a http server
 func main() {
-	httpServer := server.NewServer(logger, config)
+	// httpServer := server.NewServer(logger, config)
 
-	httpServer.Start()
+	// httpServer.Start()
 
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, os.Kill)
+	// c := make(chan os.Signal)
+	// signal.Notify(c, os.Interrupt, os.Kill)
 
-	<-c
+	// <-c
 
-	httpServer.Stop()
+	// httpServer.Stop()
+
+	openaiClient := openai.NewOpenAIClient(logger, "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", "davinci:ft-personal:kbts-2023-05-26-03-12-14")
+	paymentSvc := payment.NewPaymentService(logger, openaiClient)
+
+	// categorizedPayment, err := paymentSvc.CategorizePayment(context.Background(), paymentSvc.RawPayments[50])
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	// fmt.Printf("\n")
+	// fmt.Println("Categorized Payment")
+	// fmt.Printf("Description: %s\nCategory: %s\n", categorizedPayment.Description, categorizedPayment.Category)
+
+	categorizedPayments, err := paymentSvc.CategorizePayments(context.Background(), paymentSvc.RawPayments[:50])
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, p := range categorizedPayments {
+		fmt.Printf("Description: %s\nCategory: %s\n", p.Description, p.Category)
+	}
 }
