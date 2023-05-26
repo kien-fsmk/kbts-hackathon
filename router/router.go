@@ -14,7 +14,7 @@ import (
 func InitRouter(logger *logrus.Entry, config *viper.Viper) *mux.Router {
 	router := mux.NewRouter()
 
-	openaiClient := openai.NewOpenAIClient(logger, "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", "davinci:ft-personal:kbts-2023-05-26-03-12-14")
+	openaiClient := openai.NewOpenAIClient(logger, "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", "davinci:ft-personal:kbts-2023-05-26-03-12-14")
 	paymentSvc := payment.NewPaymentService(logger, openaiClient)
 
 	promptHandler := handlers.NewPaymentHandler(logger, config, paymentSvc)

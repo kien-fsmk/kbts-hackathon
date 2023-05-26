@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/kien-fsmk/kbts-hackathon/pkg/go-openai"
 	"github.com/sirupsen/logrus"
 )
@@ -26,16 +27,17 @@ func NewPaymentService(logger *logrus.Entry, openai *openai.OpenAIClient) *Payme
 }
 
 func (p *PaymentService) CreatePayment(ctx context.Context, payment Payment) (*Payment, error) {
+	id := uuid.New().String()
 	categorizedPayment, err := p.CategorizePayment(context.Background(), payment)
 	if err != nil {
 		return nil, err
 	}
-	p.PaymentDatabase[payment.PaymentID] = *categorizedPayment
+	p.PaymentDatabase[id] = *categorizedPayment
 	return categorizedPayment, nil
 }
 
 func (p *PaymentService) CategorizePayment(ctx context.Context, payment Payment) (*Payment, error) {
-	prompt := fmt.Sprintf("Classify the category of this description: %s. \n", payment.Description)
+	prompt := fmt.Sprintf("Classify the category of this description: `%s`", payment.Description)
 	resp, err := p.openAIClient.Completion(ctx, prompt)
 	if err != nil {
 		p.logger.Errorf("error creating completion: %v", err)
@@ -95,20 +97,3 @@ func (p *PaymentService) CategorizePayments(ctx context.Context, payments []Paym
 	}
 	return paymentWithCategory, nil
 }
-
-// func loadPaymentFromFile(fileName string) ([]Payment, error) {
-// 	jsonFile, err := os.Open("sample/" + fileName + ".json")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	defer jsonFile.Close()
-
-// 	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-// 	var payments []Payment
-// 	err = json.Unmarshal(byteValue, &payments)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return payments, nil
-// }
