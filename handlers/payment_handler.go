@@ -38,9 +38,8 @@ func (h *PaymentHandler) PaymentHandler(rw http.ResponseWriter, r *http.Request)
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	responseJSON, _ := json.Marshal(categorizedPayment)
 
-	returnResponse(rw, responseJSON, http.StatusOK)
+	returnResponse(rw, &categorizedPayment, http.StatusOK)
 }
 
 func NewPaymentHandler(logger *logrus.Entry, config *viper.Viper, paymentSvc *payment.PaymentService) PaymentHandler {
