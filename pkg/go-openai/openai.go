@@ -9,16 +9,38 @@ import (
 
 type OpenAIClient struct {
 	apiKey string
+	model  string
 	logger *logrus.Entry
 	Client *openai.Client
 }
 
-func NewOpenAIClient(logger *logrus.Entry, apiKey string) *OpenAIClient {
+func NewOpenAIClient(logger *logrus.Entry, apiKey string, modelID string) *OpenAIClient {
 	return &OpenAIClient{
 		logger: logger,
 		apiKey: apiKey,
 		Client: openai.NewClient(apiKey),
 	}
+}
+
+func (g *OpenAIClient) Completion(ctx context.Context, prompt string) (string, error) {
+	completionRequest := openai.CompletionRequest{
+		Model:       g.model,
+		Prompt:      prompt,
+		MaxTokens:   10,
+		Temperature: 0,
+		TopP:        1,
+		N:           1,
+		LogProbs:    0,
+		Stop:        []string{"\n"},
+	}
+
+	completion, err := g.Client.CreateCompletion(ctx, completionRequest)
+	if err != nil {
+		g.logger.Errorf("error creating completion: %v", err)
+	}
+	g.logger.Infof("completion created: %+v", completion)
+
+	return completion.Choices[0].Text, nil
 }
 
 func (g *OpenAIClient) CreateFile(ctx context.Context, fileName, filePath string) (string, error) {
