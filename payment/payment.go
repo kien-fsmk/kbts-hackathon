@@ -2,10 +2,7 @@ package payment
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -15,21 +12,26 @@ import (
 )
 
 type PaymentService struct {
-	logger       *logrus.Entry
-	openAIClient *openai.OpenAIClient
-
-	RawPayments         []Payment
-	PaymentWithCategory []Payment
+	logger          *logrus.Entry
+	openAIClient    *openai.OpenAIClient
+	PaymentDatabase map[string]Payment
 }
 
 func NewPaymentService(logger *logrus.Entry, openai *openai.OpenAIClient) *PaymentService {
-	// payments, _ := loadPaymentFromFile("sample_txn")
 	return &PaymentService{
-		logger:              logger,
-		openAIClient:        openai,
-		RawPayments:         make([]Payment, 0),
-		PaymentWithCategory: make([]Payment, 0),
+		logger:          logger,
+		openAIClient:    openai,
+		PaymentDatabase: make(map[string]Payment),
 	}
+}
+
+func (p *PaymentService) CreatePayment(ctx context.Context, payment Payment) (*Payment, error) {
+	categorizedPayment, err := p.CategorizePayment(context.Background(), payment)
+	if err != nil {
+		return nil, err
+	}
+	p.PaymentDatabase[payment.PaymentID] = *categorizedPayment
+	return categorizedPayment, nil
 }
 
 func (p *PaymentService) CategorizePayment(ctx context.Context, payment Payment) (*Payment, error) {
@@ -43,23 +45,6 @@ func (p *PaymentService) CategorizePayment(ctx context.Context, payment Payment)
 	category, _ := strconv.Atoi(cleanedCategory)
 	payment.Category = CategoryStr[PaymentCategory(category)]
 	return &payment, nil
-}
-
-func loadPaymentFromFile(fileName string) ([]Payment, error) {
-	jsonFile, err := os.Open("sample/" + fileName + ".json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	var payments []Payment
-	err = json.Unmarshal(byteValue, &payments)
-	if err != nil {
-		return nil, err
-	}
-	return payments, nil
 }
 
 func (p *PaymentService) CategorizePayments(ctx context.Context, payments []Payment) ([]Payment, error) {
@@ -110,3 +95,20 @@ func (p *PaymentService) CategorizePayments(ctx context.Context, payments []Paym
 	}
 	return paymentWithCategory, nil
 }
+
+// func loadPaymentFromFile(fileName string) ([]Payment, error) {
+// 	jsonFile, err := os.Open("sample/" + fileName + ".json")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	defer jsonFile.Close()
+
+// 	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+// 	var payments []Payment
+// 	err = json.Unmarshal(byteValue, &payments)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return payments, nil
+// }

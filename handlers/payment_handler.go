@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -31,7 +32,15 @@ func (h *PaymentHandler) PaymentHandler(rw http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	returnResponse(rw, contracts.BaseResponse{Code: "200", Message: "Success"}, http.StatusOK)
+	categorizedPayment, err := h.paymentSvc.CreatePayment(context.Background(), payment.Payment(request))
+	if err != nil {
+		h.logger.Errorf("Error in creating payment: %v", err.Error())
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	responseJSON, _ := json.Marshal(categorizedPayment)
+
+	returnResponse(rw, responseJSON, http.StatusOK)
 }
 
 func NewPaymentHandler(logger *logrus.Entry, config *viper.Viper, paymentSvc *payment.PaymentService) PaymentHandler {
