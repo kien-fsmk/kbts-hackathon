@@ -59,20 +59,20 @@ func main() {
 	openaiClient := openai.NewOpenAIClient(logger, "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", "davinci:ft-personal:kbts-2023-05-26-03-12-14")
 	paymentSvc := payment.NewPaymentService(logger, openaiClient)
 
-	// categorizedPayment, err := paymentSvc.CategorizePayment(context.Background(), paymentSvc.RawPayments[50])
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// fmt.Printf("\n")
-	// fmt.Println("Categorized Payment")
-	// fmt.Printf("Description: %s\nCategory: %s\n", categorizedPayment.Description, categorizedPayment.Category)
-
-	categorizedPayments, err := paymentSvc.CategorizePayments(context.Background(), paymentSvc.RawPayments[:50])
+	categorizedPayment, err := paymentSvc.CategorizePayment(context.Background(), paymentSvc.RawPayments[29])
 	if err != nil {
 		fmt.Println(err)
 	}
-	for _, p := range categorizedPayments {
-		fmt.Printf("Description: %s\nCategory: %s\n", p.Description, p.Category)
-	}
+
+	fmt.Printf("\n")
+	fmt.Println("Categorized Payment")
+	fmt.Printf("Description: %s\nCategory: %s\n", categorizedPayment.Description, categorizedPayment.Category)
+
+	// categorizedPayments, err := paymentSvc.CategorizePayments(context.Background(), paymentSvc.RawPayments[:50])
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// for _, p := range categorizedPayments {
+	// 	fmt.Printf("Description: %s\nCategory: %s\n", p.Description, p.Category)
+	// }
 }

@@ -37,7 +37,7 @@ func (p *PaymentService) CreatePayment(payment *Payment) error {
 }
 
 func (p *PaymentService) CategorizePayment(ctx context.Context, payment Payment) (*Payment, error) {
-	prompt := fmt.Sprintf("Classify the category of this description: `%s`", payment.Description)
+	prompt := fmt.Sprintf("Classify the category of this description: %s. \n", payment.Description)
 	resp, err := p.openAIClient.Completion(ctx, prompt)
 	if err != nil {
 		p.logger.Errorf("error creating completion: %v", err)
