@@ -1,11 +1,12 @@
 package main
 
 import (
-	"os"
-	"os/signal"
+	"context"
+	"fmt"
+	"github.com/kien-fsmk/kbts-hackathon/payment"
+	"github.com/kien-fsmk/kbts-hackathon/pkg/go-openai"
 	"strings"
 
-	"github.com/kien-fsmk/kbts-hackathon/server"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -44,18 +45,22 @@ func init() {
 
 // Starting a http server
 func main() {
-	httpServer := server.NewServer(logger, config)
-
-	httpServer.Start()
-
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, os.Kill)
-
-	<-c
-
-	httpServer.Stop()
+	//httpServer := server.NewServer(logger, config)
+	//
+	//httpServer.Start()
+	//
+	//c := make(chan os.Signal)
+	//signal.Notify(c, os.Interrupt, os.Kill)
+	//
+	//<-c
+	//
+	//httpServer.Stop()
 
 	// categorizedPayment, err := paymentSvc.CategorizePayment(context.Background(), paymentSvc.RawPayments[29])
+	openaiClient := openai.NewOpenAIClient(logger, "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", "davinci:ft-personal:kbts-2023-05-26-03-12-14")
+	paymentSvc := payment.NewPaymentService(logger, openaiClient)
+
+	// categorizedPayment, err := paymentSvc.CategorizePayment(context.Background(), paymentSvc.RawPayments[50])
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
@@ -71,4 +76,18 @@ func main() {
 	// for _, p := range categorizedPayments {
 	// 	fmt.Printf("Description: %s\nCategory: %s\n", p.Description, p.Category)
 	// }
+	categorizedPayments, err := paymentSvc.CategorizePayments(context.Background(), paymentSvc.RawPayments[:20])
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, p := range categorizedPayments {
+		fmt.Printf("Description: %s\nCategory: %s\n", p.Description, p.Category)
+	}
+
+	fmt.Printf("Percentages ---------------------- >>>>>>>> \n")
+
+	categoryPercentages := paymentSvc.GetCategoryPercentages(context.Background(), categorizedPayments)
+	for _, categoryPercentage := range categoryPercentages {
+		fmt.Printf("Category: %s -> %v \n", categoryPercentage.CategoryName, categoryPercentage.Percentage)
+	}
 }

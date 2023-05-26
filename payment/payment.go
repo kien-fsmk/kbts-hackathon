@@ -23,11 +23,11 @@ type PaymentService struct {
 }
 
 func NewPaymentService(logger *logrus.Entry, openai *openai.OpenAIClient) *PaymentService {
-	// payments, _ := loadPaymentFromFile("sample_txn")
+	payments, _ := loadPaymentFromFile("testcase1/sample_txn")
 	return &PaymentService{
 		logger:              logger,
 		openAIClient:        openai,
-		RawPayments:         make([]Payment, 0),
+		RawPayments:         payments,
 		PaymentWithCategory: make([]Payment, 0),
 	}
 }
@@ -109,4 +109,23 @@ func (p *PaymentService) CategorizePayments(ctx context.Context, payments []Paym
 		}
 	}
 	return paymentWithCategory, nil
+}
+
+func (p *PaymentService) GetCategoryPercentages(ctx context.Context, payments []Payment) []PaymentCategoryPercentage {
+	total := 0
+
+	categoryAmountMap := make(map[string]int)
+	response := make([]PaymentCategoryPercentage, 0)
+
+	for _, payment := range payments {
+		total += payment.Amount
+		categoryAmountMap[payment.Category] += payment.Amount
+	}
+
+	for k, v := range categoryAmountMap {
+		categoryPercentage := float64(v/total) * 100
+		response = append(response, PaymentCategoryPercentage{CategoryName: k, Percentage: categoryPercentage})
+	}
+
+	return response
 }

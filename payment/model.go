@@ -11,6 +11,11 @@ type Payment struct {
 	Category    string    `json:"category"`
 }
 
+type PaymentCategoryPercentage struct {
+	CategoryName string
+	Percentage   float64
+}
+
 type Customer struct {
 	CustomerID string `json:"customer_id"`
 	Email      string `json:"email"`
